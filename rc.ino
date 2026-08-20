@@ -1,22 +1,38 @@
 #include <SoftwareSerial.h>
 
-const int BT_RX = 0; //ou 10
-const int BT_TX = 1; //ou 11
+// Bluetooth
+const int BT_TX = 10; 
+const int BT_RX = 11; 
 SoftwareSerial Bluetooth(BT_RX, BT_TX);
 
-//Esquerdo
-const int  int1 = 2;
-const int  int2 = 3;
-//Direito
-const int  int3 = 4;
-const int  int4 = 5;
+// Motores                                                               LEGENDA
+const int int1 = 2;//                                 MOTOR A - Esquerdo         Motor B - Direito
+const int int2 = 3;//
+const int int3 = 4;//                       FRENTE ->            int 1                      int 3  
+const int int4 = 5;//                       TRAS   ->            int 2                      int 4
+
+// Luzes
+const int Farol = 6;
+const int LuzRe = 7;
+const int SetaEsquerda = 8;
+const int SetaDireita = 9;
+const int PiscaAlerta = 12;
+
+// Sons
+const int Buzina = 13;
 
 void setup() {
   pinMode(int1, OUTPUT);
   pinMode(int2, OUTPUT);
   pinMode(int3, OUTPUT);
   pinMode(int4, OUTPUT);
-  pararCarrinho();
+  PararCarrinho();
+  pinMode(Farol, OUTPUT);
+  pinMode(LuzRe, OUTPUT);
+  pinMode(SetaEsquerda, OUTPUT);
+  pinMode(SetaDireita, OUTPUT);
+  pinMode(PiscaAlerta,OUTPUT);
+  pinMode(Buzina, OUTPUT);
   Serial.begin(9600);
   Bluetooth.begin(9600);
 }
@@ -24,59 +40,191 @@ void setup() {
 void loop() {
   if (Bluetooth.available()){
     char comando = Bluetooth.read();
-    processarComando(comando);
+    ProcessarComando(comando);
   }
 }
 
-void processarComando(char cmd){
+void ProcessarComando(char cmd){
   switch(cmd){
-    case 'F': moverParaFrente();
+    case 'L': MoverParaEsquerda();
       break;
-    case 'B': moverParaTras();
+    case 'R': MoverParaDireita();
       break;
-    case 'L': moverParaEsquerda();
+    case 'F': MoverParaFrente();
       break;
-    case 'R': moverParaDireita();
+    case 'G': MoverParaFrenteEsquerda();
       break;
-    case 'S': pararCarrinho();
+    case 'I': MoverParaFrenteDireita();
       break;
-    default: pararCarrinho();
+    case 'B': MoverParaTras();
+      break;
+    case 'H': MoverParaTrasEsquerda();
+      break;
+    case 'J': MoverParaTrasDireita();
+      break;
+    case 'S': PararCarrinho();
+      break;
+    case 'W': AcenderFarol();
+      break;
+    case 'w': ApagarFarol();
+      break;
+    case '0': ASetaEsquerda();
+      break;
+    case 'q': ASetaDireita();
+      break;
+    case 'X': AcenderPiscaAlerta();
+      break;
+    case 'x': ApagarPiscaAlerta();
+      break;
+    case 'V': Buzinar();
+      break;
+    case 'v': PararBuzina();
+      break;
+
+    default: PararCarrinho();
       break;
   }
 }
 
-void moverParaFrente(){
-    digitalWrite(int1, HIGH); //Esquerdo
-    digitalWrite(int2, LOW);
+void MoverParaEsquerda(){
 
-    digitalWrite(int3, HIGH); //Direito
-    digitalWrite(int4, LOW);
+  //Motor A - Esquerdo
+    digitalWrite(int1, LOW); //Frente
+    digitalWrite(int2, LOW);  //Tras
+
+  //Motor B - Direito
+    digitalWrite(int3, HIGH); //Frente
+    digitalWrite(int4, LOW);  //Tras
+
+    digitalWrite(SetaEsquerda, HIGH);
+    digitalWrite(LuzRe, LOW);
 }
-void moverParaTras(){
-    digitalWrite(int1, LOW);
-    digitalWrite(int2, HIGH);
-    
-    digitalWrite(int3, LOW);
-    digitalWrite(int4, HIGH);
+void MoverParaDireita(){
+
+  //Motor A - Esquerdo
+    digitalWrite(int1, HIGH); //Frente
+    digitalWrite(int2, LOW);  //Tras
+
+  //Motor B - Direito
+    digitalWrite(int3, LOW); //Frente
+    digitalWrite(int4, LOW);  //Tras
+
+    digitalWrite(SetaDireita, HIGH);
+    digitalWrite(LuzRe, LOW);
 }
-void moverParaEsquerda(){
-    digitalWrite(int1, LOW);
-    digitalWrite(int2, HIGH);
-    
-    digitalWrite(int3, HIGH);
-    digitalWrite(int4, LOW);
+void MoverParaFrente(){
+
+  //Motor A - Esquerdo
+    digitalWrite(int1, HIGH); //Frente
+    digitalWrite(int2, LOW);  //Tras
+
+  //Motor B - Direito
+    digitalWrite(int3, HIGH); //Frente
+    digitalWrite(int4, LOW);  //Tras
+
+    digitalWrite(SetaEsquerda, LOW);
+    digitalWrite(SetaDireita, LOW);
+    digitalWrite(LuzRe, LOW);
 }
-void moverParaDireita(){
-    digitalWrite(int1, HIGH);
-    digitalWrite(int2, LOW);
-    
-    digitalWrite(int3, LOW);
-    digitalWrite(int4, HIGH);
+void MoverParaFrenteEsquerda(){
+
+  //Motor A - Esquerdo
+    digitalWrite(int1, LOW); //Frente
+    digitalWrite(int2, LOW);  //Tras
+
+  //Motor B - Direito
+    digitalWrite(int3, HIGH); //Frente
+    digitalWrite(int4, LOW);  //Tras
+
+    digitalWrite(SetaEsquerda, HIGH);
+    digitalWrite(LuzRe, LOW);
 }
-void pararCarrinho(){
-    digitalWrite(int1, LOW);
-    digitalWrite(int2, LOW);
-    
-    digitalWrite(int3, LOW);
-    digitalWrite(int4, LOW);
+void MoverParaFrenteDireita(){
+
+  //Motor A - Esquerdo
+    digitalWrite(int1, HIGH); //Frente
+    digitalWrite(int2, LOW);  //Tras
+
+  //Motor B - Direito
+    digitalWrite(int3, LOW); //Frente
+    digitalWrite(int4, LOW);  //Tras
+
+    digitalWrite(SetaDireita, HIGH);
+    digitalWrite(LuzRe, LOW);
+}
+void MoverParaTras(){
+
+  //Motor A - Esquerdo
+    digitalWrite(int1, LOW); //Frente
+    digitalWrite(int2, HIGH);  //Tras
+
+  //Motor B - Direito
+    digitalWrite(int3, LOW); //Frente
+    digitalWrite(int4, HIGH);  //Tras
+
+    digitalWrite(SetaEsquerda, LOW);
+    digitalWrite(SetaDireita, LOW);
+    digitalWrite(LuzRe, HIGH);
+}
+void MoverParaTrasEsquerda(){
+
+  //Motor A - Esquerdo
+    digitalWrite(int1, LOW); //Frente
+    digitalWrite(int2, LOW);  //Tras
+
+  //Motor B - Direito
+    digitalWrite(int3, LOW); //Frente
+    digitalWrite(int4, HIGH);  //Tras
+
+    digitalWrite(LuzRe, HIGH);
+}
+void MoverParaTrasDireita(){
+
+  //Motor A - Esquerdo
+    digitalWrite(int1, LOW); //Frente
+    digitalWrite(int2, HIGH);  //Tras
+
+  //Motor B - Direito
+    digitalWrite(int3, LOW); //Frente
+    digitalWrite(int4, LOW);  //Tras
+
+    digitalWrite(LuzRe, HIGH);
+}
+void PararCarrinho(){
+
+  //Motor A - Esquerdo
+    digitalWrite(int1, LOW); //Frente
+    digitalWrite(int2, LOW);  //Tras
+
+  //Motor B - Direito
+    digitalWrite(int3, LOW); //Frente
+    digitalWrite(int4, LOW);  //Tras
+
+    digitalWrite(SetaEsquerda, LOW);
+    digitalWrite(SetaDireita, LOW); 
+    digitalWrite(LuzRe, LOW);
+}
+void AcenderFarol(){
+    digitalWrite(Farol, HIGH);
+}
+void ApagarFarol(){
+    digitalWrite(Farol, LOW);
+}
+void ASetaEsquerda(){
+    digitalWrite(SetaEsquerda, HIGH);
+}
+void ASetaDireita(){
+    digitalWrite(SetaDireita, HIGH);
+}
+void AcenderPiscaAlerta(){
+    digitalWrite(PiscaAlerta, HIGH);
+}
+void ApagarPiscaAlerta(){
+    digitalWrite(PiscaAlerta, LOW);
+}
+void Buzinar(){
+    tone(Buzina, 200);
+}
+void PararBuzina(){
+    noTone(Buzina);
 }
